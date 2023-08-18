@@ -75,6 +75,10 @@ make install
 #build gcc one more time to get a working compiler for applications 
 RUN cd /stage/gcc/gcc-build && \
 rm -rf * && \
+mkdir -p /stage/gcc/gcc-build/gcc/../lib/gcc/aarch64-linux/13.2.0/ && \
+cd /stage/gcc/gcc-build/gcc/../lib/gcc/aarch64-linux/13.2.0/ && \
+ln -s $PREFIX/include . && \
+cd /stage/gcc/gcc-build && \
 ../configure --with-build-sysroot=$PREFIX --target=$TARGET --prefix=$PREFIX --disable-multilib --disable-nls --enable-languages=c,c++ && \
 make -j && \
 make install
