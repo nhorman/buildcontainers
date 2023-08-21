@@ -60,9 +60,9 @@ make install-target-libgcc
 
 #
 #finish glibc
-#RUN cd /stage/glibc/build && \
-#make -j && \
-#make install 
+RUN cd /stage/glibc/build && \
+make -j && \
+make install 
 
 #build gcc one more time to get a working compiler for applications 
 #RUN cd /stage/gcc/gcc-build && \
