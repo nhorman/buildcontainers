@@ -1,10 +1,13 @@
-.PHONY: all check clean
+.PHONY: %-container 
 
-check:
-	@if [ -z "${CNAME}" ]; then echo "Need to set CNAME"; exit 1; fi
+%: 
+	@echo building $@ container
+	podman build -t $@-container --squash --env-file=./container_configs/$@.env --env-file=./versions.env -f Dockerfile.builder
 
-all: check
-	podman build --squash -t ${CNAME} -f Dockerfile.builder
+%-clean:
+	podman rmi -f $@-container
 
-clean: check
-	podman rmi localhost/${CNAME}
+
+list-available:
+	@echo Available container builds
+	@/bin/bash -c "ls container_configs/*.env | sed -e\"s/container_configs\///\" -e\"s/\.env//\""
