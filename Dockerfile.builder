@@ -65,19 +65,19 @@ make -j && \
 make install 
 
 #build gcc one more time to get a working compiler for applications 
-#RUN cd /stage/gcc/gcc-build && \
-#rm -rf * && \
-#../configure --with-build-sysroot=$PREFIX --includedir=$PREFIX/$TARGET/include --target=$TARGET --prefix=$PREFIX --disable-multilib --disable-nls --enable-languages=c,c++ && \
-#mkdir -p /stage/gcc/gcc-build/gcc/../lib/gcc/aarch64-linux/13.2.0/ && \
-#cd /stage/gcc/gcc-build/gcc/../lib/gcc/aarch64-linux/13.2.0/ && \
-#ln -s $PREFIX/include . && \
-#cd /stage/gcc/gcc-build && \
-#make && \
-#make install
+RUN cd /stage/gcc/gcc-build && \
+rm -rf * && \
+../configure --includedir=$PREFIX/$TARGET/include --target=$TARGET --prefix=$PREFIX --disable-multilib --disable-nls --enable-languages=c,c++ && \
+mkdir -p /stage/gcc/gcc-build/gcc/../lib/gcc/aarch64-linux/13.2.0/ && \
+cd /stage/gcc/gcc-build/gcc/../lib/gcc/aarch64-linux/13.2.0/ && \
+ln -s /usr/include . && \
+cd /stage/gcc/gcc-build && \
+make && \
+make install
 
 #clean up
-#RUN rm -rf /stage 
-#RUN dnf clean all
+RUN rm -rf /stage 
+RUN dnf clean all
 
 
 
