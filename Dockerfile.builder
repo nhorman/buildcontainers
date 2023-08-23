@@ -1,12 +1,24 @@
 FROM fedora:38
 
-ENV TARCH="arm64"
-ENV TARGET="aarch64-linux"
-ENV HOST="x86_64-pc-linux-gnu"
-ENV PREFIX="/opt"
+ARG TARCH
+ARG TARGET
+ARG PREFIX
+ARG BINUTILS_TAG
+ARG GCC_VERSION
+ARG GCC_TAG
+ARG MPFR_TAG
+ARG GMP_TAG
+ARG ISL_TAG
+ARG CLOOG_TAG
+ARG GLIBC_TAG
 ENV PATH="$PREFIX/bin:$PATH"
 
 RUN dnf install -y libxcrypt-devel xz bzip2 wget mercurial glibc-devel.i686 rsync diffutils git-core gcc gcc-c++ make bison flex gmp-devel libmpc-devel mpfr-devel texinfo cloog-devel isl-devel
+
+RUN echo -e "MACHTYPE=$MACHTYPE\n TARCH=$TARCH\n TARGET=$TARGET\n PREFIX=$PREFIX\n PATH=$PATH" > /build_args
+RUN echo -e "BINUTILS_TAG=$BINUTILS_TAG\n GCC_VERSION=$GCC_VERSION\n GCC_TAG=$GCC_TAG\n MPFR_TAG=$MPFR_TAG\n GMP_TAG=$GMP_TAG\n ISL_TAG=$ISL_TAG\n CLOOG_TAG=$CLOOG_TAG\n GLIBC_TAG=$GLIBC_TAG" > /build_versions
+RUN cat /build_args
+RUN cat /build_versions
 
 RUN mkdir /stage
 
@@ -14,7 +26,7 @@ RUN mkdir /stage
 RUN cd /stage && \
 git clone git://sourceware.org/git/binutils-gdb.git && \
 cd binutils-gdb && git checkout $BINUTILS_TAG && \
-./configure --host=$MACHTYPE --target=$TARGET --prefix=$PREFIX --disable-nls --disable-werror --disable-multilib && \
+./configure --target=$TARGET --prefix=$PREFIX --disable-nls --disable-werror --disable-multilib && \
 make -j && make install && cd .. 
 
 #install kernel headers
@@ -68,8 +80,8 @@ make install
 RUN cd /stage/gcc/gcc-build && \
 rm -rf * && \
 ../configure --includedir=$PREFIX/$TARGET/include --target=$TARGET --prefix=$PREFIX --disable-multilib --disable-nls --enable-languages=c,c++ && \
-mkdir -p /stage/gcc/gcc-build/gcc/../lib/gcc/aarch64-linux/$GCC_VERSION/ && \
-cd /stage/gcc/gcc-build/gcc/../lib/gcc/aarch64-linux/$GCC_VERSION/ && \
+mkdir -p /stage/gcc/gcc-build/gcc/../lib/gcc/$TARGET/$GCC_VERSION/ && \
+cd /stage/gcc/gcc-build/gcc/../lib/gcc/$TARGET/$GCC_VERSION/ && \
 ln -s /usr/include . && \
 cd /stage/gcc/gcc-build && \
 make && \

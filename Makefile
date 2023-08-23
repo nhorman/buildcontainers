@@ -2,7 +2,7 @@
 
 %: 
 	@echo building $@ container
-	podman build -t $@-container --squash --env-file=./container_configs/$@.env --env-file=./versions.env -f Dockerfile.builder
+	podman build -t $@-container ${PODMAN_BUILD_ARGS} --build-arg-file=./container_configs/$@.env --build-arg-file=./versions.env -f Dockerfile.builder
 
 %-clean:
 	podman rmi -f $@-container
